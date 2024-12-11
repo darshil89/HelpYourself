@@ -1,5 +1,6 @@
 "use client"
 import React, { useState } from 'react';
+import { data } from "../../data"
 
 const CopyButton = ({ title, content }: { title: string, content: string }) => {
   const [copied, setCopied] = useState(false);
@@ -42,19 +43,11 @@ const CopyButton = ({ title, content }: { title: string, content: string }) => {
 };
 
 const Page = () => {
-  const items = [
-    { title: 'Title 11111111111111', content: 'Content 1' },
-    { title: 'Title 2', content: 'Content 2' },
-    { title: 'Title 3', content: 'Content 3' },
-    { title: 'Title 4', content: 'Content 4' },
-    { title: 'Title 5', content: 'Content 5' },
-    { title: 'Title 6', content: 'Content 6' },
-  ];
 
   return (
     <div className="container mx-auto p-4 w-full gap-4 flex items-center justify-center">
       <div className='w-1/2 flex flex-col space-y-1'>
-        {items.map((item, index) => (
+        {data.map((item, index) => (
           <CopyButton key={index} title={item.title} content={item.content} />
         ))}
       </div>
