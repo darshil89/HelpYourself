@@ -1,213 +1,208 @@
 export const data = [
   {
-    title: "BIT ERROR RATE CALCULATION OF SHIFT KEYINGS USING",
-    content: `clc;
-clear all;
-close all;
-msglen=10000;
-n=msglen;
-b=randi(1,n);
-f1=1;f2=2;
-t=0:1/30:1-1/30;
-%ASK
-sa1=sin(2*pi*f1*t);
-E1=sum(sa1.^2);
-sa1=sa1/sqrt(E1); %unit energy 
-sa0=0*sin(2*pi*f1*t);
-%FSK
-sf0=sin(2*pi*f1*t);
-E=sum(sf0.^2);
-sf0=sf0/sqrt(E);
-sf1=sin(2*pi*f2*t);
-E=sum(sf1.^2);
-sf1=sf1/sqrt(E);
-%PSK
-sp0=-sin(2*pi*f1*t)/sqrt(E1);
-sp1=sin(2*pi*f1*t)/sqrt(E1);
-%MODULATION
-ask=[];psk=[];fsk=[];
-for i=1:n
- if b(i)==1
- ask=[ask sa1];
- psk=[psk sp1];
- fsk=[fsk sf1];
- else
- ask=[ask sa0];
- psk=[psk sp0];
- fsk=[fsk sf0];
- end
-end
-%AWGN
-for snr=0:20
- askn=awgn(ask,snr);
- pskn=awgn(psk,snr);
- fskn=awgn(fsk,snr);
- %DETECTION
- A=[];F=[];P=[];
- for i=1:n
- %ASK Detection
- if sum(sa1.*askn(1+30*(i-1):30*i))>0.5
- A=[A 1];
- else
- A=[A 0];
- end
- %FSK Detection
- if sum(sf1.*fskn(1+30*(i-1):30*i))>0.5
- F=[F 1];
- else
- F=[F 0];
- end
- %PSK Detection
- if sum(sp1.*pskn(1+30*(i-1):30*i))>0
- P=[P 1];
- else
- P=[P 0];
- end
- end
- %BER
- errA=0;errF=0; errP=0;
- for i=1:n
- if A(i)==b(i)
- errA=errA;
- else
- errA=errA+1;
- end
- if F(i)==b(i)
- errF=errF;
- else
- errF=errF+1;
- end
- if P(i)==b(i)
- errP=errP;
- else
- errP=errP+1;
- end
- end
- BER_A(snr+1)=errA/n;
- BER_F(snr+1)=errF/n;
- BER_P(snr+1)=errP/n;
-end
-figure(1)
-semilogy(0:20,BER_A, 'b','linewidth',2)
-title('BER Vs SNR')
-grid on;
-hold on
-semilogy(0:20,BER_F,'r','linewidth',2)
-semilogy(0:20,BER_P, 'k','linewidth',2)
-xlabel('Eo/No(dB)')
-ylabel('BER')
-hold off
-legend('ASK','FSK','PSK');
+    title: "Image Processing concept",
+    content: `
+    % Program to study the image processing concept
+I=imread('pout.tif');
+J=imcomplement(I);
+figure,imshow(I)
+figure,imshow(J)
+K=imadjust(I,[0;0.4],[0.5;1])
+figure,imshow(K)
 `,
   },
   {
-    title: "HUFFMAN BINARY SOURCE ENCODING",
+    title: "Histogram equalization image",
     content: `
-clc; 
-clear all;
-close all;
-symbols = [1:6]; % Distinct symbols that data source can produce
-p = [.3 .3 .13 .12 .1 .05]; % Probability distribution
-[dict,avglen] = huffmandict(symbols,p); % Create dictionary.
-%actualsig = ([1:6],1,[symbols; p]);
-data = repmat([1 2 2 3 3 3],1); % Create data using p.
-disp('the data is');
-disp(data);
-encoded_data = huffmanenco(data,dict); % Encode the data.
-disp('The Huffman coded data is');
-disp(encoded_data);
-decoded_data = huffmandeco(encoded_data,dict);
-disp('The Huffman decoded data is');
-disp(decoded_data);`,
+    % Program to obtain histogram equalization concept
+I=imread('trees.tif');
+J=imcomplement(I);
+imhist(J,100);
+imshow(I);
+title('original');
+figure,imshow(J);
+title('complement');
+I=histeq(I);
+figure,imhist(I,64);
+title('equilized');
+figure,imhist(J,64);
+title('histogram');
+n=numel(I);
+p=imhist(I)/n;
+figure,plot(p);
+title('normalized');
+K=imadjust(I,[0;1],[0.4;1],0.5);
+figure,imshow(K);
+title('adjusted image');
+T=maketform('affine',[.3 0 0;.5 1 0;0 1 1]);
+tformfwd([0,0],T);
+I2=imtransform(I,T);
+figure,imshow(I2);
+title('forward image');
+
+`,
   },
   {
-    title: "SHANNON-FANO BINARY SOURCE ENCODING",
+    title: "Averaging filter in spatial domain",
+    content: `
+% Program for implementation of smoothing or averaging filter in spatial domain
+I=imread('trees.tif');
+subplot(2,2,1);
+imshow(J);
+title('original image');
+f=ones(3,3)/9;
+h=imfilter(I,f,'circular');
+subplot(2,2,2);
+imshow(h);
+title('averaged image');`,
+  },
+  {
+    title: "Opening and Closing of the image",
+    content: `
+f=imread('coins.png');
+se=strel('square',20);
+fo=imopen(f,se);
+figure,imshow(f)
+title('input image');
+figure,imshow(fo)
+title('opening of input image');
+fc=imclose(f,se);
+figure,imshow(fc)
+title('opening of input image');
+foc=imclose(fo,se);
+figure,imshow(foc)
+title('closing of opened input image');`,
+  },
+  {
+    title: "Region of Interest for the image",
+    content: `
+clc;
+close all;
+clear;
+
+% Load and convert indexed image to grayscale
+load trees;
+I = ind2gray(X, map);  
+
+% Display the original image
+figure, imshow(I);
+title('Original Image');
+
+% Let user select region by clicking points
+disp('Select points for the region and press Enter');
+[x, y] = getpts;  % User clicks points
+
+% Fill the selected region
+I2 = roifill(I, x, y);
+
+% Display the modified image
+figure, imshow(I2);
+title('Output Image (After roifill)');`,
+  },
+  {
+    title: "Edge detection algorithm",
+    content: `
+%Program for edge detection algorithm
+I=imread('coins.png');
+figure,imshow(I)
+title ('figure 1 original image');
+h=ones(5,5)/25;
+b=imfilter(I,h);
+figure,imshow(b)
+title ('figure 2 filtered image');
+c=edge(b,'sobel');
+figure,imshow(c)
+title ('figure 3 edge detected output by sobel operator');
+d=edge(b,'prewitt');
+figure,imshow(d)
+title ('figure 4 edge detected output by prewitt operator');
+e=edge(b,'robert');
+figure,imshow(e)
+title ('figure 5 edge detected output by robert operator');
+f=edge(b,'canny');
+figure,imshow(f)
+title ('figure 6 edge detected output by canny operator');
+`,
+  },
+  {
+    title: "Sharpen image using gradient mask",
+    content: `
+% Program of sharpen image using gradient mask
+I=imread('coins.png');
+subplot(2,2,1);
+imshow(I)
+title('Original Image');
+h=fspecial('sobel');
+f=imfilter(I,h,'replicate');
+subplot(2,2,2);
+imshow(F)
+title('filtered image by sobel mask');
+s=I+F;
+subplot(2,2,4);
+imshow(s)
+title('Final o/p Image');`,
+  },
+  {
+    title: "Erosion and Dilation",
+    content: `
+% Program for morphological operations: Erosions& Dilation
+f=imread('coins.png');
+B=[0 1 1;1 1 1;0 1 0];
+f1=imdilate(f,B);
+se=strel('disk',10);
+f2=imerode(f,se);
+figure,imshow(f)
+title('input image');
+figure,imshow(f1)
+title('delated image');
+figure,imshow(f2)
+title('eroded image');`,
+  },
+  {
+    title:  "DCT/IDCT computation",
     content: `
 clc;
 clear all;
 close all;
-m=input('Enter the no. of message ensembles : ');
-z=[];
-h=0;
-l=0;
-display('Enter the probabilities in descending order');
-for i=1:m
- fprintf('Ensemble %d\n',i);
- p(i)=input('');
+
+% User input for basis dimension
+m = input('Enter the basis matrix dimension: ');
+n = m;
+
+% Define alpha1 and alpha2 coefficients
+alpha1 = ones(1, m) * sqrt(2/m);
+alpha1(1) = sqrt(1/m);
+
+alpha2 = ones(1, n) * sqrt(2/n);
+alpha2(1) = sqrt(1/n);
+
+% Initialize the DCT basis cell array
+a = cell(m, n);
+
+% Compute 2D DCT basis functions
+for u = 0:m-1
+    for v = 0:n-1
+        basis = zeros(m, n);
+        for x = 0:m-1
+            for y = 0:n-1
+                basis(x+1, y+1) = alpha1(u+1) * alpha2(v+1) * ...
+                    cos((2*x+1)*u*pi/(2*m)) * cos((2*y+1)*v*pi/(2*n));
+            end
+        end
+        a{u+1, v+1} = basis;
+    end
 end
-%Finding each alpha values 
-a(1)=0;
-for j=2:m;
- a(j)=a(j-1)+p(j-1);
-end
-fprintf('\n Alpha Matrix');
-display(a);
-%Finding each code length
-for i=1:m
- n(i)= ceil(-1*(log2(p(i))));
-end
-fprintf('\n Code length matrix');
-display(n);
-%Computing each code
-for i=1:m
- int=a(i);
-for j=1:n(i)
- frac=int*2;
- c=floor(frac);
- frac=frac-c;
- z=[z c];
- int=frac;
-end
-fprintf('Codeword %d',i);
-display(z);
-z=[];
-end
-%Computing Avg. Code Length & Entropy
-fprintf('Avg. Code Length');
-for i=1:m
- x=p(i)*n(i);
- l=l+x;
- x=p(i)*log2(1/p(i));
- h=h+x;
-end
-display(l);
-fprintf('Entropy');
-display(h);
-%Computing Efficiency
-fprintf('Efficiency');
-display(100*h/l);
-fprintf('Redundancy');
-display(100-(100*h/l));`,
-  },
-  {
-    title: "SIMULATION OF SPREAD SPECTRUM COMMUNICATION",
-    content: `
-clc; 
-clear all; 
-close all; 
-PNbit_stream = round(rand(1,32)); %PNbit stream
-input_signal=[1 1 0 0 1 0 1 1]; %input bit stream
-PNbit_stream; 
-%%%%%%%%%%%DSSS%%%%%%%%%%%%%%%
-for i=1:1:8 
- for j=1:4:32 
- for k=1:1:4 
- a(j)=xor(PNbit_stream(k+j-1),input_signal(i)); 
- a(j);
- end
- end
-end
-subplot(3,1,1)
-stem(PNbit_stream);
-grid on
-title('PNbit_stream'); 
-subplot(3,1,2) 
-stem(input_signal);
-grid on
-title('input_signal');
-subplot(3,1,3); 
-stem(a); 
-grid on
-title('DSSS');`,
+
+% Visualize each basis matrix
+figure(3)
+k = 1;
+for u = 1:m
+    for v = 1:n
+        subplot(m, n, k)
+        imshow(a{u, v}, [])
+        title(['u=', num2str(u-1), ', v=', num2str(v-1)])
+        k = k + 1;
+    end
+end`,
   },
 ];
